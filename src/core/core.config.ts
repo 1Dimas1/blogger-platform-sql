@@ -23,16 +23,32 @@ export class CoreConfig {
   port: number;
 
   @IsNotEmpty({
-    message:
-      'Set Env variable MONGO_URI, example: mongodb://localhost:27017/my-app-local-db',
+    message: 'Set Env variable DB_USER, example: postgres',
   })
-  mongoURI: string;
+  dbUser: string;
 
   @IsNotEmpty({
-    message:
-      'Set Env variable MONGO_URI, example: mongodb://localhost:27017/my-app-local-db',
+    message: 'Set Env variable DB_HOST, example: localhost',
+  })
+  dbHost: string;
+
+  @IsNotEmpty({
+    message: 'Set Env variable DB_NAME, example: blogger-platform-dev',
   })
   dbName: string;
+
+  @IsNotEmpty({
+    message: 'Set Env variable DB_PASSWORD',
+  })
+  dbPassword: string;
+
+  @IsNumber(
+    {},
+    {
+      message: 'Set Env variable DB_PORT, example: 5432',
+    },
+  )
+  dbPort: number;
 
   @IsEnum(Environments, {
     message:
@@ -130,8 +146,11 @@ export class CoreConfig {
 
   constructor(private configService: ConfigService<any, true>) {
     this.port = parseInt(this.configService.get('PORT'));
-    this.mongoURI = this.configService.get('MONGO_URI');
+    this.dbUser = this.configService.get('DB_USER');
+    this.dbHost = this.configService.get('DB_HOST');
     this.dbName = this.configService.get('DB_NAME');
+    this.dbPassword = this.configService.get('DB_PASSWORD');
+    this.dbPort = parseInt(this.configService.get('DB_PORT'));
     this.env = this.configService.get('NODE_ENV');
     this.isSwaggerEnabled = configValidationUtility.convertToBoolean(
       this.configService.get('IS_SWAGGER_ENABLED'),

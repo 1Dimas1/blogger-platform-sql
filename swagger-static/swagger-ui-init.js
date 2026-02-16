@@ -1604,7 +1604,8 @@ window.onload = function() {
               "type": "string"
             },
             "firstName": {
-              "type": "string"
+              "type": "string",
+              "nullable": true
             },
             "lastName": {
               "type": "string",
@@ -1780,7 +1781,6 @@ window.onload = function() {
             },
             "websiteUrl": {
               "type": "string",
-              "format": "uri",
               "minLength": 1,
               "maxLength": 100
             }
@@ -1802,7 +1802,6 @@ window.onload = function() {
             },
             "websiteUrl": {
               "type": "string",
-              "format": "uri",
               "minLength": 1,
               "maxLength": 100
             }

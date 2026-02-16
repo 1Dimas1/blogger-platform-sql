@@ -2,7 +2,7 @@ import { configModule } from './config-dynamic-module';
 import { DynamicModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
+import { DbModule } from './db/db.module';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module';
 import { CoreModule } from './core/core.module';
 import { BloggerPlatformModule } from './modules/blogger-platform/blogger-platform.module';
@@ -23,16 +23,15 @@ import { CoreConfig } from './core/core.config';
       rootPath: join(__dirname, '..', 'swagger-static'),
       serveRoot: '/api',
     }),
-    MongooseModule.forRootAsync({
-      useFactory: (coreConfig: CoreConfig) => {
-        const uri: string = coreConfig.mongoURI;
-        const dbName: string = coreConfig.dbName;
-
-        return {
-          uri: uri,
-          dbName: dbName,
-        };
-      },
+    DbModule.forRootAsync({
+      imports: [CoreModule],
+      useFactory: (coreConfig: CoreConfig) => ({
+        user: coreConfig.dbUser,
+        host: coreConfig.dbHost,
+        database: coreConfig.dbName,
+        password: coreConfig.dbPassword,
+        port: coreConfig.dbPort,
+      }),
       inject: [CoreConfig],
     }),
     ThrottlerModule.forRootAsync({
