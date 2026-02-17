@@ -51,7 +51,7 @@ window.onload = function() {
           ]
         }
       },
-      "/api/users/{id}": {
+      "/api/sa/users/{id}": {
         "get": {
           "operationId": "UsersController_getById",
           "parameters": [
@@ -167,7 +167,7 @@ window.onload = function() {
           ]
         }
       },
-      "/api/users": {
+      "/api/sa/users": {
         "get": {
           "operationId": "UsersController_getAll",
           "parameters": [

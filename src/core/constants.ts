@@ -1,8 +1,10 @@
 export const Constants = {
   PATH: {
+    SA: {
+      USERS: '/sa/users',
+    },
     BLOGS: '/blogs',
     POSTS: '/posts',
-    USERS: '/users',
     AUTH: '/auth',
     COMMENTS: '/comments',
     SECURITY: '/security',

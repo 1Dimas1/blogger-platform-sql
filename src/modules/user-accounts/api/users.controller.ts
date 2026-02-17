@@ -34,7 +34,7 @@ import { DeleteUserCommand } from '../application/usecases/admins/delete-user.us
 import { GetUserByIdQuery } from '../application/queries/get-user-by-id.query';
 
 @ApiTags('Users')
-@Controller(Constants.PATH.USERS)
+@Controller(Constants.PATH.SA.USERS)
 export class UsersController {
   constructor(
     private usersQueryRepository: UsersQueryRepository,

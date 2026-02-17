@@ -59,7 +59,7 @@ export class UsersRepository {
     const { statusCode = HttpStatus.CREATED, auth = 'admin' } = options;
 
     const req = request(this.httpServer)
-      .post(`/${Constants.GLOBAL_PREFIX}/users`)
+      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}`)
       .send(data);
 
     this.applyAuth(req, auth);
@@ -88,7 +88,7 @@ export class UsersRepository {
   ): Promise<PaginatedViewDto<UserViewDto[]>> {
     const { statusCode = HttpStatus.OK, auth = 'admin' } = options;
 
-    let url = `/${Constants.GLOBAL_PREFIX}/users`;
+    let url = `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}`;
     const queryParams = new URLSearchParams();
 
     if (query.searchLoginTerm !== undefined && query.searchLoginTerm !== null) {
@@ -140,7 +140,7 @@ export class UsersRepository {
     const { statusCode = HttpStatus.OK, auth = 'admin' } = options;
 
     const req = request(this.httpServer).get(
-      `/${Constants.GLOBAL_PREFIX}/users/${id}`,
+      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}/${id}`,
     );
 
     this.applyAuth(req, auth);
@@ -170,7 +170,7 @@ export class UsersRepository {
     const { statusCode = HttpStatus.OK, auth = 'admin' } = options;
 
     const req = request(this.httpServer)
-      .put(`/${Constants.GLOBAL_PREFIX}/users/${id}`)
+      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}/${id}`)
       .send(data);
 
     this.applyAuth(req, auth);
@@ -192,7 +192,7 @@ export class UsersRepository {
     const { statusCode = HttpStatus.NO_CONTENT, auth = 'admin' } = options;
 
     const req = request(this.httpServer).delete(
-      `/${Constants.GLOBAL_PREFIX}/users/${id}`,
+      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}/${id}`,
     );
 
     this.applyAuth(req, auth);

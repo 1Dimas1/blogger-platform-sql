@@ -17,7 +17,7 @@ export class UsersTestManager {
     statusCode: number = HttpStatus.CREATED,
   ): Promise<UserViewDto> {
     const response = await request(this.app.getHttpServer())
-      .post(`/${Constants.GLOBAL_PREFIX}/users`)
+      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}`)
       .send(createModel)
       .auth('admin', 'qwerty')
       .expect(statusCode);
@@ -31,7 +31,7 @@ export class UsersTestManager {
     statusCode: number = HttpStatus.NO_CONTENT,
   ): Promise<UserViewDto> {
     const response = await request(this.app.getHttpServer())
-      .put(`/${Constants.GLOBAL_PREFIX}/users/${userId}`)
+      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.USERS}/${userId}`)
       .send(updateModel)
       .auth('admin', 'qwerty')
       .expect(statusCode);
