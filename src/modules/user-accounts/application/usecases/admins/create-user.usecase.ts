@@ -56,10 +56,10 @@ export class CreateUserUseCase
 
     const user = await this.usersFactory.create(dto);
 
-    user.emailConfirmation.isConfirmed = true;
+    user.emailIsConfirmed = true;
 
     await this.usersRepository.save(user);
 
-    return user._id.toString();
+    return user.id;
   }
 }

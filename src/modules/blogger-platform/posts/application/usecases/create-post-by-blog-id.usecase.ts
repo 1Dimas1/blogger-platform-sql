@@ -30,6 +30,6 @@ export class CreatePostByBlogIdUseCase
 
     await this.postsRepository.save(post);
 
-    return post._id.toString();
+    return post.id;
   }
 }

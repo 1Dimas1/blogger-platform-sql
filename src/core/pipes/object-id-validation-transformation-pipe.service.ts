@@ -1,21 +1,17 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import { isValidObjectId, Types } from 'mongoose';
 import { DomainException } from '../exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../exceptions/domain-exception-codes';
+
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUuid(value: string): boolean {
+  return UUID_REGEX.test(value);
+}
 
 @Injectable()
 export class ObjectIdValidationTransformationPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata): any {
-    if (metadata.metatype !== Types.ObjectId) {
-      return value;
-    }
-
-    if (!isValidObjectId(value)) {
-      throw new DomainException({
-        code: DomainExceptionCode.NotFound,
-        message: `Invalid ObjectId: ${value}`,
-      });
-    }
     return value;
   }
 }
@@ -26,10 +22,10 @@ export class ObjectIdValidationTransformationPipe implements PipeTransform {
 @Injectable()
 export class ObjectIdValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata): any {
-    if (!isValidObjectId(value)) {
+    if (typeof value === 'string' && !isValidUuid(value)) {
       throw new DomainException({
         code: DomainExceptionCode.BadRequest,
-        message: `Invalid ObjectId: ${value}`,
+        message: `Invalid ID: ${value}`,
       });
     }
 

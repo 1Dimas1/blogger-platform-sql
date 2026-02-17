@@ -25,13 +25,19 @@ import { CoreConfig } from './core/core.config';
     }),
     DbModule.forRootAsync({
       imports: [CoreModule],
-      useFactory: (coreConfig: CoreConfig) => ({
-        user: coreConfig.dbUser,
-        host: coreConfig.dbHost,
-        database: coreConfig.dbName,
-        password: coreConfig.dbPassword,
-        port: coreConfig.dbPort,
-      }),
+      useFactory: (coreConfig: CoreConfig) =>
+        coreConfig.databaseUrl
+          ? {
+              connectionString: coreConfig.databaseUrl,
+              ssl: { rejectUnauthorized: false },
+            }
+          : {
+              user: coreConfig.dbUser,
+              host: coreConfig.dbHost,
+              database: coreConfig.dbName,
+              password: coreConfig.dbPassword,
+              port: coreConfig.dbPort,
+            },
       inject: [CoreConfig],
     }),
     ThrottlerModule.forRootAsync({

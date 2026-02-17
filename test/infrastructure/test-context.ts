@@ -1,8 +1,4 @@
-import { INestApplication } from '@nestjs/common';
-import {
-  MeViewDto,
-  UserViewDto,
-} from '../../src/modules/user-accounts/api/view-dto/users.view-dto';
+import { UserViewDto } from '../../src/modules/user-accounts/api/view-dto/users.view-dto';
 import { CreateUserInputDto } from '../../src/modules/user-accounts/api/input-dto/create-user.input-dto';
 import { UsersRepository } from '../users/users.repository';
 import { AuthRepository } from '../auth/auth.repository';

@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SecurityDevicesRepository } from '../../infrastructure/security-devices.repository';
-import { Types } from 'mongoose';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 
@@ -25,7 +24,7 @@ export class TerminateAllOtherSessionsUseCase
       dto.currentDeviceId,
     );
 
-    if (!currentDevice || currentDevice.userId.toString() !== dto.userId) {
+    if (!currentDevice || currentDevice.userId !== dto.userId) {
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'Invalid session',
@@ -40,7 +39,7 @@ export class TerminateAllOtherSessionsUseCase
     }
 
     await this.securityDevicesRepository.deleteAllUserDevicesExcept(
-      new Types.ObjectId(dto.userId),
+      dto.userId,
       dto.currentDeviceId,
     );
   }

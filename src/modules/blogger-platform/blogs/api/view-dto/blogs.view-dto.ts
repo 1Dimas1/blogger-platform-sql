@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BlogDocument } from '../../domain/blog.entity';
 
 export class BlogViewDto {
   @ApiProperty()
@@ -20,15 +19,15 @@ export class BlogViewDto {
   @ApiProperty()
   isMembership: boolean;
 
-  static mapToView(blog: BlogDocument): BlogViewDto {
+  static mapToView(row: any): BlogViewDto {
     const dto = new BlogViewDto();
 
-    dto.id = blog._id.toString();
-    dto.name = blog.name;
-    dto.description = blog.description;
-    dto.websiteUrl = blog.websiteUrl;
-    dto.createdAt = blog.createdAt.toISOString();
-    dto.isMembership = blog.isMembership;
+    dto.id = row.id;
+    dto.name = row.name;
+    dto.description = row.description;
+    dto.websiteUrl = row.website_url ?? row.websiteUrl;
+    dto.createdAt = new Date(row.created_at ?? row.createdAt).toISOString();
+    dto.isMembership = row.is_membership ?? row.isMembership;
 
     return dto;
   }

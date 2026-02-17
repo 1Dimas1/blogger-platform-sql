@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PostDocument } from '../../domain/post.entity';
 import { LikeStatus } from '../../../likes/domain/like.entity';
 
 export class LikeDetailsViewDto {
@@ -53,29 +52,23 @@ export class PostViewDto {
   extendedLikesInfo: ExtendedLikesInfoViewDto;
 
   static mapToView(
-    post: PostDocument,
+    row: any,
     myStatus: LikeStatus = LikeStatus.None,
+    newestLikes: LikeDetailsViewDto[] = [],
   ): PostViewDto {
     const dto = new PostViewDto();
 
-    dto.id = post._id.toString();
-    dto.title = post.title;
-    dto.shortDescription = post.shortDescription;
-    dto.content = post.content;
-    dto.blogId = post.blogId.toString();
-    dto.blogName = post.blogName;
-    dto.createdAt = post.createdAt;
-
-    const newestLikes: LikeDetailsViewDto[] =
-      post.extendedLikesInfo.newestLikes.map((like) => ({
-        addedAt: like.addedAt.toISOString(),
-        userId: like.userId.toString(),
-        login: like.login,
-      }));
+    dto.id = row.id;
+    dto.title = row.title;
+    dto.shortDescription = row.short_description ?? row.shortDescription;
+    dto.content = row.content;
+    dto.blogId = row.blog_id ?? row.blogId;
+    dto.blogName = row.blog_name ?? row.blogName;
+    dto.createdAt = new Date(row.created_at ?? row.createdAt);
 
     dto.extendedLikesInfo = {
-      likesCount: post.extendedLikesInfo.likesCount,
-      dislikesCount: post.extendedLikesInfo.dislikesCount,
+      likesCount: row.likes_count ?? row.likesCount ?? 0,
+      dislikesCount: row.dislikes_count ?? row.dislikesCount ?? 0,
       myStatus,
       newestLikes,
     };

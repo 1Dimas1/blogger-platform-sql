@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  Comment,
-  CommentDocument,
-  CommentModelType,
-} from '../../domain/comment.entity';
+import { Comment, CommentDocument } from '../../domain/comment.entity';
 
 export interface CreateCommentFactoryDto {
   content: string;
@@ -15,13 +10,8 @@ export interface CreateCommentFactoryDto {
 
 @Injectable()
 export class CommentsFactory {
-  constructor(
-    @InjectModel(Comment.name)
-    private CommentModel: CommentModelType,
-  ) {}
-
   async create(dto: CreateCommentFactoryDto): Promise<CommentDocument> {
-    return this.CommentModel.createInstance({
+    return Comment.createInstance({
       content: dto.content,
       commentatorInfo: {
         userId: dto.userId,

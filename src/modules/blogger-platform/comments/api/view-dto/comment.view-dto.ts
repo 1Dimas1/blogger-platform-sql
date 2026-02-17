@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CommentDocument } from '../../domain/comment.entity';
 import { LikeStatus } from '../../../likes/domain/like.entity';
 
 export class LikesInfoViewDto {
@@ -38,18 +37,18 @@ export class CommentViewDto {
   likesInfo: LikesInfoViewDto;
 
   static mapToView(
-    comment: CommentDocument,
+    row: any,
     likesInfo: LikesInfoViewDto,
   ): CommentViewDto {
     const dto = new CommentViewDto();
 
-    dto.id = comment._id.toString();
-    dto.content = comment.content;
+    dto.id = row.id;
+    dto.content = row.content;
     dto.commentatorInfo = {
-      userId: comment.commentatorInfo.userId.toString(),
-      userLogin: comment.commentatorInfo.userLogin,
+      userId: row.commentator_user_id ?? row.commentatorUserId,
+      userLogin: row.commentator_user_login ?? row.commentatorUserLogin,
     };
-    dto.createdAt = comment.createdAt;
+    dto.createdAt = new Date(row.created_at ?? row.createdAt);
     dto.likesInfo = likesInfo;
 
     return dto;

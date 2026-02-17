@@ -22,6 +22,6 @@ export class CreateBlogUseCase
 
     await this.blogsRepository.save(blog);
 
-    return blog._id.toString();
+    return blog.id;
   }
 }

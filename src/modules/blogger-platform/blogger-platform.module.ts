@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BlogsController } from './blogs/api/blogs.controller';
 import { PostsController } from './posts/api/posts.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './blogs/domain/blog.entity';
 import { BlogsRepository } from './blogs/infrastructure/blogs.repository';
 import { BlogsQueryRepository } from './blogs/infrastructure/blogs.query-repository';
 import { PostsRepository } from './posts/infrastructure/posts.repository';
@@ -11,9 +9,6 @@ import { CommentsRepository } from './comments/infrastructure/comments.repositor
 import { CommentsQueryRepository } from './comments/infrastructure/comments.query-repository';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { CommentsController } from './comments/api/comments.controller';
-import { Post, PostSchema } from './posts/domain/post.entity';
-import { Comment, CommentSchema } from './comments/domain/comment.entity';
-import { Like, LikeSchema } from './likes/domain/like.entity';
 import { CreateBlogUseCase } from './blogs/application/usecases/create-blog.usecase';
 import { UpdateBlogUseCase } from './blogs/application/usecases/update-blog.usecase';
 import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usecase';
@@ -67,15 +62,7 @@ const queryHandlers = [
 ];
 
 @Module({
-  imports: [
-    UserAccountsModule,
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: Like.name, schema: LikeSchema },
-    ]),
-  ],
+  imports: [UserAccountsModule],
   controllers: [BlogsController, PostsController, CommentsController],
   providers: [
     ...commandHandlers,

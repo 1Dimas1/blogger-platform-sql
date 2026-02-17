@@ -1,7 +1,5 @@
-import { Types } from 'mongoose';
-
 export class CreateSecurityDeviceDomainDto {
-  userId: Types.ObjectId;
+  userId: string;
   deviceId: string;
   ip: string;
   title: string;

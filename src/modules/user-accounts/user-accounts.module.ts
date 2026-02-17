@@ -1,11 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './api/users.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './domain/user.entity';
-import {
-  SecurityDevice,
-  SecurityDeviceSchema,
-} from './domain/security-device.entity';
 import { UsersRepository } from './infrastructure/users.repository';
 import { SecurityDevicesRepository } from './infrastructure/security-devices.repository';
 import { UsersQueryRepository } from './infrastructure/query/users.query-repository';
@@ -64,14 +58,7 @@ const commandHandlers = [
 const queryHandlers = [GetUserByIdQueryHandler, GetAllUserDevicesQueryHandler];
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule,
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: SecurityDevice.name, schema: SecurityDeviceSchema },
-    ]),
-  ],
+  imports: [PassportModule, JwtModule],
   controllers: [UsersController, AuthController, SecurityDevicesController],
   providers: [
     ...commandHandlers,

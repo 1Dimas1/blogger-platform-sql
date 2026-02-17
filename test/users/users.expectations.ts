@@ -2,7 +2,7 @@ import { UserViewDto } from '../../src/modules/user-accounts/api/view-dto/users.
 import { CreateUserInputDto } from '../../src/modules/user-accounts/api/input-dto/create-user.input-dto';
 import {
   expectValidISODateString,
-  expectValidMongoId,
+  expectValidUUID,
 } from '../infrastructure/expect-helpers';
 
 /**
@@ -20,7 +20,7 @@ export function expectValidUserShape(user: UserViewDto) {
   expect(typeof user.email).toBe('string');
   expect(typeof user.createdAt).toBe('string');
 
-  expectValidMongoId(user.id);
+  expectValidUUID(user.id);
   expectValidISODateString(user.createdAt);
 
   // Ensure password is not exposed

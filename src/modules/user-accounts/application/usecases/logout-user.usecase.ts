@@ -29,7 +29,7 @@ export class LogoutUserUseCase implements ICommandHandler<LogoutUserCommand> {
       });
     }
 
-    if (device.userId.toString() !== dto.userId) {
+    if (device.userId !== dto.userId) {
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'Session does not belong to user',

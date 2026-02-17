@@ -27,6 +27,6 @@ export class CreatePostUseCase
 
     await this.postsRepository.save(post);
 
-    return post._id.toString();
+    return post.id;
   }
 }

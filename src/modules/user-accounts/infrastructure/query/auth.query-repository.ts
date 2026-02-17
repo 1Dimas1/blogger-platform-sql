@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { MeViewDto } from '../../api/view-dto/users.view-dto';
-import { UsersRepository } from '../users.repository';
-import { UserDocument } from '../../domain/user.entity';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
+import { DbService } from '../../../../db/db.service';
 
 @Injectable()
 export class AuthQueryRepository {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(private dbService: DbService) {}
 
   async me(userId: string): Promise<MeViewDto> {
-    const user: UserDocument | null =
-      await this.usersRepository.findById(userId);
+    const result = await this.dbService.query(
+      `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
+      [userId],
+    );
 
-    if (!user) {
+    if (result.rows.length === 0) {
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'User not found',
       });
     }
 
-    return MeViewDto.mapToView(user);
+    return MeViewDto.mapToView(result.rows[0]);
   }
 }

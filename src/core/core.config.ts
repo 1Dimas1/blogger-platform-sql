@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IsBoolean, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateIf } from 'class-validator';
 import { configValidationUtility } from '../setup/config-validation.utility';
 
 export enum Environments {
@@ -22,26 +22,34 @@ export class CoreConfig {
   )
   port: number;
 
+  @IsOptional()
+  databaseUrl?: string;
+
+  @ValidateIf((o) => !o.databaseUrl)
   @IsNotEmpty({
     message: 'Set Env variable DB_USER, example: postgres',
   })
   dbUser: string;
 
+  @ValidateIf((o) => !o.databaseUrl)
   @IsNotEmpty({
     message: 'Set Env variable DB_HOST, example: localhost',
   })
   dbHost: string;
 
+  @ValidateIf((o) => !o.databaseUrl)
   @IsNotEmpty({
     message: 'Set Env variable DB_NAME, example: blogger-platform-dev',
   })
   dbName: string;
 
+  @ValidateIf((o) => !o.databaseUrl)
   @IsNotEmpty({
     message: 'Set Env variable DB_PASSWORD',
   })
   dbPassword: string;
 
+  @ValidateIf((o) => !o.databaseUrl)
   @IsNumber(
     {},
     {
@@ -146,11 +154,14 @@ export class CoreConfig {
 
   constructor(private configService: ConfigService<any, true>) {
     this.port = parseInt(this.configService.get('PORT'));
-    this.dbUser = this.configService.get('DB_USER');
-    this.dbHost = this.configService.get('DB_HOST');
-    this.dbName = this.configService.get('DB_NAME');
-    this.dbPassword = this.configService.get('DB_PASSWORD');
-    this.dbPort = parseInt(this.configService.get('DB_PORT'));
+    this.databaseUrl = this.configService.get('DATABASE_URL') || undefined;
+    if (!this.databaseUrl) {
+      this.dbUser = this.configService.get('DB_USER');
+      this.dbHost = this.configService.get('DB_HOST');
+      this.dbName = this.configService.get('DB_NAME');
+      this.dbPassword = this.configService.get('DB_PASSWORD');
+      this.dbPort = parseInt(this.configService.get('DB_PORT'));
+    }
     this.env = this.configService.get('NODE_ENV');
     this.isSwaggerEnabled = configValidationUtility.convertToBoolean(
       this.configService.get('IS_SWAGGER_ENABLED'),

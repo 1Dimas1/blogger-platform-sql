@@ -1,52 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
-import {
-  SecurityDevice,
-  SecurityDeviceDocument,
-  SecurityDeviceModelType,
-} from '../../domain/security-device.entity';
 import { DeviceViewDto } from '../../api/view-dto/device.view-dto';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
+import { DbService } from '../../../../db/db.service';
 
 @Injectable()
 export class SecurityDevicesQueryRepository {
-  constructor(
-    @InjectModel(SecurityDevice.name)
-    private securityDeviceModel: SecurityDeviceModelType,
-  ) {}
+  constructor(private dbService: DbService) {}
 
-  /**
-   * Get all active devices for a user
-   */
   async getAllByUserId(userId: string): Promise<DeviceViewDto[]> {
-    const devices: SecurityDeviceDocument[] = await this.securityDeviceModel
-      .find({
-        userId: new Types.ObjectId(userId),
-        deletedAt: null,
-      })
-      .sort({ lastActiveDate: -1 })
-      .exec();
+    const result = await this.dbService.query(
+      `SELECT * FROM security_devices
+       WHERE user_id = $1 AND deleted_at IS NULL
+       ORDER BY last_active_date DESC`,
+      [userId],
+    );
 
-    return devices.map((device) => DeviceViewDto.mapToView(device));
+    return result.rows.map((row) => DeviceViewDto.mapToView(row));
   }
 
-  /**
-   * Get device by deviceId or throw if not found
-   */
   async getByDeviceIdOrNotFoundFail(deviceId: string): Promise<DeviceViewDto> {
-    const device: SecurityDeviceDocument | null = await this.securityDeviceModel
-      .findOne({ deviceId, deletedAt: null })
-      .exec();
+    const result = await this.dbService.query(
+      `SELECT * FROM security_devices WHERE device_id = $1 AND deleted_at IS NULL`,
+      [deviceId],
+    );
 
-    if (!device) {
+    if (result.rows.length === 0) {
       throw new DomainException({
         code: DomainExceptionCode.NotFound,
         message: 'Device session not found',
       });
     }
 
-    return DeviceViewDto.mapToView(device);
+    return DeviceViewDto.mapToView(result.rows[0]);
   }
 }

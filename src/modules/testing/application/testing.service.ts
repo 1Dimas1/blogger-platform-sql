@@ -1,20 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { DbService } from '../../../db/db.service';
 
 @Injectable()
 export class TestingService {
-  constructor(
-    @InjectConnection() private readonly databaseConnection: Connection,
-  ) {}
+  constructor(private readonly dbService: DbService) {}
 
   async deleteAllData() {
-    const collections = await this.databaseConnection.listCollections();
-
-    const promises = collections.map((collection) =>
-      this.databaseConnection.collection(collection.name).deleteMany({}),
+    await this.dbService.query(
+      `TRUNCATE TABLE likes, comments, posts, blogs, security_devices, users CASCADE`,
     );
-    await Promise.all(promises);
 
     return {
       status: 'succeeded',

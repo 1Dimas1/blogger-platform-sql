@@ -87,19 +87,6 @@ export function expectValidISODateString(dateString: string) {
 }
 
 /**
- * Validates that a string is a valid MongoDB ObjectId (24 hex characters).
- *
- * @param id - The ID string to validate
- *
- * @example
- * expectValidMongoId(user.id);
- */
-export function expectValidMongoId(id: string) {
-  expect(typeof id).toBe('string');
-  expect(id).toMatch(/^[0-9a-f]{24}$/i);
-}
-
-/**
  * Validates that a string is a valid UUID v4.
  *
  * @param id - The ID string to validate

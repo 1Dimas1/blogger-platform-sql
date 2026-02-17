@@ -173,9 +173,9 @@ export const TEST_HELPERS = {
   },
 
   /**
-   * Creates a non-existent MongoDB ObjectId for testing 404 responses
+   * Creates a non-existent UUID for testing 404 responses
    */
   createNonExistentId(): string {
-    return '647f76db548418d53ab66666';
+    return '00000000-0000-4000-a000-000000000000';
   },
 };

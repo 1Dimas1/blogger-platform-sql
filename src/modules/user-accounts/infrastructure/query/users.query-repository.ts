@@ -1,63 +1,81 @@
-import { User, UserDocument, UserModelType } from '../../domain/user.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
 import { UserViewDto } from '../../api/view-dto/users.view-dto';
-import { FilterQuery } from 'mongoose';
 import { GetUsersQueryParams } from '../../api/input-dto/get-users-query-params.input-dto';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
+import { DbService } from '../../../../db/db.service';
+import { UsersSortBy } from '../../api/input-dto/users-sort-by';
 
+const sortByColumnMap: Record<UsersSortBy, string> = {
+  [UsersSortBy.CreatedAt]: 'created_at',
+  [UsersSortBy.Login]: 'login',
+  [UsersSortBy.Email]: 'email',
+};
+
+@Injectable()
 export class UsersQueryRepository {
-  constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-  ) {}
+  constructor(private dbService: DbService) {}
 
   async getByIdOrNotFoundFail(id: string): Promise<UserViewDto> {
-    const user: UserDocument | null = await this.UserModel.findOne({
-      _id: id,
-      deletedAt: null,
-    });
+    const result = await this.dbService.query(
+      `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
+      [id],
+    );
 
-    if (!user) {
+    if (result.rows.length === 0) {
       throw new DomainException({
         code: DomainExceptionCode.NotFound,
         message: 'user not found',
       });
     }
 
-    return UserViewDto.mapToView(user);
+    return UserViewDto.mapToView(result.rows[0]);
   }
 
   async getAll(
     query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserViewDto[]>> {
-    const filter: FilterQuery<User> = {
-      deletedAt: null,
-    };
+    const conditions: string[] = ['deleted_at IS NULL'];
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    const orConditions: string[] = [];
 
     if (query.searchLoginTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        login: { $regex: query.searchLoginTerm, $options: 'i' },
-      });
+      orConditions.push(`login ILIKE $${paramIndex}`);
+      params.push(`%${query.searchLoginTerm}%`);
+      paramIndex++;
     }
 
     if (query.searchEmailTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        email: { $regex: query.searchEmailTerm, $options: 'i' },
-      });
+      orConditions.push(`email ILIKE $${paramIndex}`);
+      params.push(`%${query.searchEmailTerm}%`);
+      paramIndex++;
     }
 
-    const users: UserDocument[] = await this.UserModel.find(filter)
-      .sort({ [query.sortBy]: query.sortDirection })
-      .skip(query.calculateSkip())
-      .limit(query.pageSize);
+    if (orConditions.length > 0) {
+      conditions.push(`(${orConditions.join(' OR ')})`);
+    }
 
-    const totalCount: number = await this.UserModel.countDocuments(filter);
+    const whereClause = conditions.join(' AND ');
+    const sortColumn = sortByColumnMap[query.sortBy] || 'created_at';
+    const sortDirection = query.sortDirection.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-    const items: UserViewDto[] = users.map(UserViewDto.mapToView);
+    const countResult = await this.dbService.query(
+      `SELECT COUNT(*) FROM users WHERE ${whereClause}`,
+      params,
+    );
+    const totalCount = parseInt(countResult.rows[0].count);
+
+    const itemsResult = await this.dbService.query(
+      `SELECT * FROM users WHERE ${whereClause}
+       ORDER BY ${sortColumn} ${sortDirection}
+       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+      [...params, query.pageSize, query.calculateSkip()],
+    );
+
+    const items: UserViewDto[] = itemsResult.rows.map(UserViewDto.mapToView);
 
     return PaginatedViewDto.mapToView({
       items,

@@ -1,26 +1,22 @@
-import { User, UserDocument, UserModelType } from '../../domain/user.entity';
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserExternalDto } from './external-dto/users.external-dto';
+import { DbService } from '../../../../db/db.service';
 
 // can be used in other services(blog,post,comment,etc)
 @Injectable()
 export class UsersExternalQueryRepository {
-  constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-  ) {}
+  constructor(private dbService: DbService) {}
 
   async getByIdOrNotFoundFail(id: string): Promise<UserExternalDto> {
-    const user: UserDocument | null = await this.UserModel.findOne({
-      _id: id,
-      deletedAt: null,
-    });
+    const result = await this.dbService.query(
+      `SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL`,
+      [id],
+    );
 
-    if (!user) {
+    if (result.rows.length === 0) {
       throw new NotFoundException('user not found');
     }
 
-    return UserExternalDto.mapToView(user);
+    return UserExternalDto.mapToView(result.rows[0]);
   }
 }

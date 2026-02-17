@@ -52,7 +52,7 @@ export class RefreshTokensUseCase
       });
     }
 
-    if (device.userId.toString() !== dto.userId) {
+    if (device.userId !== dto.userId) {
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'Device does not belong to user',

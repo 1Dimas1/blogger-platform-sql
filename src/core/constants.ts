@@ -11,12 +11,4 @@ export const Constants = {
     TESTING: '/testing',
   },
   GLOBAL_PREFIX: 'api',
-  BLOG_COLLECTION_NAME: 'blogs',
-  POST_COLLECTION_NAME: 'posts',
-  USER_COLLECTION_NAME: 'users',
-  COMMENT_COLLECTION_NAME: 'comments',
-  INVALID_TOKENS_COLLECTION_NAME: 'invalidTokens',
-  SECURITY_DEVICES_COLLECTION_NAME: 'securityDevices',
-  RATE_LIMIT_COLLECTION_NAME: 'rateLimit',
-  LIKE_COLLECTION_NAME: 'likes',
 };

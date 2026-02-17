@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { SecurityDevicesRepository } from '../../infrastructure/security-devices.repository';
 import { SecurityDeviceDocument } from '../../domain/security-device.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { Types } from 'mongoose';
 import { CreateSecurityDeviceDomainDto } from '../../domain/dto/create-security-device.domain.dto';
 import { UserAccountsConfig } from '../../config/user-accounts.config';
 import { calculateExpirationDate } from '../../utils/calculate-expiration-date.utility';
@@ -53,7 +52,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
 
     // Create device with temporary lastActiveDate
     const deviceDto: CreateSecurityDeviceDomainDto = {
-      userId: new Types.ObjectId(dto.userId),
+      userId: dto.userId,
       deviceId: deviceId,
       ip: dto.ip,
       title: dto.deviceTitle,

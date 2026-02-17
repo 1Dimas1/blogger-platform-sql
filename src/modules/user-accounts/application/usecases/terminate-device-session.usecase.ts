@@ -23,7 +23,7 @@ export class TerminateDeviceSessionUseCase
     const device: SecurityDeviceDocument | null =
       await this.securityDevicesRepository.findOrNotFoundFail(dto.deviceId);
 
-    if (device.userId.toString() !== dto.userId) {
+    if (device.userId !== dto.userId) {
       throw new DomainException({
         code: DomainExceptionCode.Forbidden,
         message: 'Cannot terminate device session of another user',

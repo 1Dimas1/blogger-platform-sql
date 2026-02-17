@@ -46,6 +46,6 @@ export class CreateCommentUseCase
 
     await this.commentsRepository.save(comment);
 
-    return comment._id.toString();
+    return comment.id;
   }
 }

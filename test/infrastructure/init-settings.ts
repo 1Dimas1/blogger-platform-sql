@@ -1,6 +1,4 @@
-import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
-import { Connection } from 'mongoose';
 import { UsersTestManager } from '../helpers/users-test-manager';
 import { deleteAllData } from '../utils/delete-all-data';
 import { EmailServiceMock } from '../mocks/email-service.mock';
@@ -38,8 +36,6 @@ export const initSettings = async (
 
   await app.init();
 
-  const databaseConnection: Connection =
-    app.get<Connection>(getConnectionToken());
   const httpServer = app.getHttpServer();
 
   // Legacy test manager (kept for backward compatibility)
@@ -57,7 +53,6 @@ export const initSettings = async (
 
   return {
     app,
-    databaseConnection,
     httpServer,
 
     // Legacy (backward compatibility)

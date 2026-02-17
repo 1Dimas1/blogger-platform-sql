@@ -33,7 +33,7 @@ export class ConfirmRegistrationUseCase
       });
     }
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailIsConfirmed) {
       throw new DomainException({
         code: DomainExceptionCode.BadRequest,
         message: 'Email already confirmed',

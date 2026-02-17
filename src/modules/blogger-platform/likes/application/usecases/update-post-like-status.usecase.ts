@@ -5,9 +5,6 @@ import { PostsRepository } from '../../../posts/infrastructure/posts.repository'
 import { LikesFactory } from '../factories/likes.factory';
 import { LikeDocument, LikeStatus } from '../../domain/like.entity';
 import { UpdatePostLikesInfoCommand } from '../../../posts/application/usecases/update-post-likes-info.usecase';
-import { LikeDetails } from '../../../posts/domain/extended-likes-info.schema';
-import { UsersExternalQueryRepository } from '../../../../user-accounts/infrastructure/external-query/users.external-query-repository';
-import { UserExternalDto } from '../../../../user-accounts/infrastructure/external-query/external-dto/users.external-dto';
 
 export class UpdatePostLikeStatusCommand {
   constructor(
@@ -26,7 +23,6 @@ export class UpdatePostLikeStatusUseCase
     private likesRepository: LikesRepository,
     private postsRepository: PostsRepository,
     private commandBus: CommandBus,
-    private usersExternalQueryRepository: UsersExternalQueryRepository,
   ) {}
 
   async execute({
@@ -72,37 +68,8 @@ export class UpdatePostLikeStatusUseCase
       (like) => like.status === LikeStatus.Dislike,
     ).length;
 
-    const newestLikesData: LikeDocument[] =
-      await this.likesRepository.findNewestLikes(postId, 'post', 3);
-
-    const newestLikes: LikeDetails[] = await Promise.all(
-      newestLikesData.map(async (like) => {
-        let login: string = 'Unknown';
-        try {
-          const user: UserExternalDto =
-            await this.usersExternalQueryRepository.getByIdOrNotFoundFail(
-              like.userId.toString(),
-            );
-          login = user.login;
-        } catch (error) {
-          // User might have been deleted, use 'Unknown'
-        }
-
-        return {
-          addedAt: like.createdAt,
-          userId: like.userId,
-          login,
-        };
-      }),
-    );
-
     await this.commandBus.execute(
-      new UpdatePostLikesInfoCommand(
-        postId,
-        likesCount,
-        dislikesCount,
-        newestLikes,
-      ),
+      new UpdatePostLikesInfoCommand(postId, likesCount, dislikesCount),
     );
   }
 }

@@ -341,6 +341,9 @@ describe('Auth', () => {
         authRepository,
       );
 
+      // Wait 1s so JWT iat (seconds precision) differs
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const refreshResponse = await authRepository.refreshToken(
         authContext.cookies,
       );

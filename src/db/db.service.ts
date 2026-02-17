@@ -4,29 +4,32 @@ import {
   OnModuleInit,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { Client } from 'pg';
+import { Pool } from 'pg';
 
 export interface DatabaseConfig {
-  user: string;
-  host: string;
-  database: string;
-  password: string;
-  port: number;
+  connectionString?: string;
+  ssl?: { rejectUnauthorized: boolean };
+  user?: string;
+  host?: string;
+  database?: string;
+  password?: string;
+  port?: number;
 }
 
 export const DATABASE_CONFIG = 'DATABASE_CONFIG';
 
 @Injectable()
 export class DbService implements OnModuleInit, OnModuleDestroy {
-  private client: Client;
+  private pool: Pool;
 
   constructor(@Inject(DATABASE_CONFIG) private dbConfig: DatabaseConfig) {}
 
   async onModuleInit() {
-    this.client = new Client(this.dbConfig);
+    this.pool = new Pool(this.dbConfig);
 
     try {
-      await this.client.connect();
+      const client = await this.pool.connect();
+      client.release();
       console.log('Connected to PostgreSQL database');
     } catch (error) {
       console.error('Database connection error', error);
@@ -35,13 +38,13 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    await this.client.end();
+    await this.pool.end();
     console.log('Disconnected from PostgreSQL database');
   }
 
   async query(queryString: string, params?: any[]) {
     return params
-      ? this.client.query(queryString, params)
-      : this.client.query(queryString);
+      ? this.pool.query(queryString, params)
+      : this.pool.query(queryString);
   }
 }
