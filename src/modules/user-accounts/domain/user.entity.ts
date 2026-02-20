@@ -14,7 +14,7 @@ export const passwordConstraints = {
 };
 
 export const emailConstraints = {
-  match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+  match: /^[\w\-\.+]+@([\w-]+\.)+[\w-]{2,4}$/,
 };
 
 export class User {
