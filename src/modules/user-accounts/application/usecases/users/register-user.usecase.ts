@@ -72,6 +72,8 @@ export class RegisterUserUseCase
 
     await this.usersRepository.save(user);
 
-    this.eventBus.publish(new UserRegisteredEvent(user.email, confirmCode));
+    await this.eventBus.publish(
+      new UserRegisteredEvent(user.email, confirmCode),
+    );
   }
 }

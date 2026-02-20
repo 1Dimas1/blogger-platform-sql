@@ -60,7 +60,7 @@ export class ResendConfirmationEmailUseCase
     user.setConfirmationCode(confirmCode, expirationDate);
     await this.usersRepository.save(user);
 
-    this.eventBus.publish(
+    await this.eventBus.publish(
       new ConfirmationEmailResendRequestedEvent(user.email, confirmCode),
     );
   }
