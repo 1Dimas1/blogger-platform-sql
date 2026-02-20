@@ -21,14 +21,8 @@ export class EmailTemplateManager implements IEmailTemplateManager {
     html: string;
   } {
     const subject = 'Please confirm your email';
-    const confirmationLink = `${this.notificationsConfig.frontendUrl}${this.notificationsConfig.emailConfirmationPath}?code=${confirmationCode}`;
 
-    const html = `
-            <h1>Thank you for registration</h1>
-            <p>To finish registration please follow the link below:
-            <a href="${confirmationLink}">complete registration</a>
-            </p>
-        `;
+    const html = `${confirmationCode}`;
 
     return { subject, html };
   }
