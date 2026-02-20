@@ -26,8 +26,8 @@ export class UserViewDto {
     dto.email = user.email;
     dto.login = user.login;
     dto.createdAt = new Date(user.created_at).toISOString();
-    dto.firstName = user.first_name;
-    dto.lastName = user.last_name;
+    // dto.firstName = user.first_name;
+    // dto.lastName = user.last_name;
 
     return dto;
   }
