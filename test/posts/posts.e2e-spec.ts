@@ -53,8 +53,8 @@ describe('Posts (e2e)', () => {
   describe('GET /posts - Get All Posts', () => {
     it('should return all posts without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post1 = await postsFactory.createPost(postsRepository, blog.id);
-      const post2 = await postsFactory.createPost(postsRepository, blog.id);
+      const post1 = await postsFactory.createPost(blogsRepository, blog.id);
+      const post2 = await postsFactory.createPost(blogsRepository, blog.id);
 
       const result = await postsRepository.getAll();
 
@@ -78,7 +78,7 @@ describe('Posts (e2e)', () => {
 
     it('should support pagination with custom page size', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      await postsFactory.createMultiplePosts(15, postsRepository, blog.id);
+      await postsFactory.createMultiplePosts(15, blogsRepository, blog.id);
 
       const result = await postsRepository.getAll({
         pageNumber: 2,
@@ -93,14 +93,12 @@ describe('Posts (e2e)', () => {
 
     it('should sort by createdAt descending (default)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      await postsFactory.createMultiplePosts(5, postsRepository, blog.id);
+      await postsFactory.createMultiplePosts(5, blogsRepository, blog.id);
 
       const result = await postsRepository.getAll();
 
-      expectSortedBy(
-        result.items,
-        'desc',
-        (post) => new Date(post.createdAt).getTime(),
+      expectSortedBy(result.items, 'desc', (post) =>
+        new Date(post.createdAt).getTime(),
       );
     });
 
@@ -108,7 +106,7 @@ describe('Posts (e2e)', () => {
       const blog = await blogsFactory.createBlog(blogsRepository, {
         name: 'Test Blog',
       });
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const result = await postsRepository.getAll();
 
@@ -118,7 +116,7 @@ describe('Posts (e2e)', () => {
 
     it('should show correct myStatus when user is authenticated', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Create user and login
       const userData = usersFactory.createUserData();
@@ -136,19 +134,22 @@ describe('Posts (e2e)', () => {
       );
 
       // Get posts with authentication
-      const result = await postsRepository.getAll({}, {
-        auth: { token: loginResponse.body.accessToken },
-      });
+      const result = await postsRepository.getAll(
+        {},
+        {
+          auth: { token: loginResponse.body.accessToken },
+        },
+      );
 
       expectMyStatus(result.items[0], LikeStatus.Like);
     });
 
     it('should not return soft-deleted posts', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post1 = await postsFactory.createPost(postsRepository, blog.id);
-      const post2 = await postsFactory.createPost(postsRepository, blog.id);
+      const post1 = await postsFactory.createPost(blogsRepository, blog.id);
+      const post2 = await postsFactory.createPost(blogsRepository, blog.id);
 
-      await postsRepository.delete(post1.id);
+      await blogsRepository.deletePost(blog.id, post1.id);
 
       const result = await postsRepository.getAll();
 
@@ -160,7 +161,7 @@ describe('Posts (e2e)', () => {
   describe('GET /posts/:id - Get Post By ID', () => {
     it('should return post by ID without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const created = await postsFactory.createPost(postsRepository, blog.id);
+      const created = await postsFactory.createPost(blogsRepository, blog.id);
 
       const post = await postsRepository.getById(created.id);
 
@@ -177,7 +178,7 @@ describe('Posts (e2e)', () => {
         content: 'Test Content',
       });
 
-      const created = await postsRepository.create(postData);
+      const created = await blogsRepository.createPost(blog.id, postData);
       const post = await postsRepository.getById(created.id);
 
       expect(post.title).toBe('Test Post');
@@ -189,7 +190,7 @@ describe('Posts (e2e)', () => {
 
     it('should show correct myStatus for authenticated user', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Create user and login
       const userData = usersFactory.createUserData();
@@ -215,162 +216,10 @@ describe('Posts (e2e)', () => {
     });
   });
 
-  describe('POST /posts - Create Post', () => {
-    it('should create post with admin auth', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostData(blog.id);
-
-      const post = await postsRepository.create(postData);
-
-      expectValidPostShape(post);
-      expectPostToMatchInput(post, postData);
-      expectInitialLikesInfo(post);
-    });
-
-    it('should create post with minimum valid title (1 char)', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithShortTitle(blog.id);
-
-      const post = await postsRepository.create(postData);
-
-      expectValidPostShape(post);
-      expect(post.title.length).toBe(1);
-    });
-
-    it('should create post with maximum valid title (30 chars)', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithLongTitle(blog.id);
-
-      const post = await postsRepository.create(postData);
-
-      expectValidPostShape(post);
-      expect(post.title.length).toBe(30);
-    });
-
-    it('should return 400 when title is empty', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithEmptyTitle(blog.id);
-
-      const response = await postsRepository.create(postData, {
-        statusCode: 400,
-      });
-
-      expectValidationErrors(response, ['title']);
-    });
-
-    it('should return 400 when title is too long (31+ chars)', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithTooLongTitle(blog.id);
-
-      const response = await postsRepository.create(postData, {
-        statusCode: 400,
-      });
-
-      expectValidationErrors(response, ['title']);
-    });
-
-    it('should return 400 when shortDescription is empty', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithEmptyShortDescription(
-        blog.id,
-      );
-
-      const response = await postsRepository.create(postData, {
-        statusCode: 400,
-      });
-
-      expectValidationErrors(response, ['shortDescription']);
-    });
-
-    it('should return 400 when content is empty', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostDataWithEmptyContent(blog.id);
-
-      const response = await postsRepository.create(postData, {
-        statusCode: 400,
-      });
-
-      expectValidationErrors(response, ['content']);
-    });
-
-    it('should return 401 without admin credentials', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const postData = postsFactory.createPostData(blog.id);
-
-      await postsRepository.create(postData, {
-        statusCode: 401,
-        auth: 'none',
-      });
-    });
-  });
-
-  describe('PUT /posts/:id - Update Post', () => {
-    it('should update post with admin auth', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
-      const updateData = postsFactory.createUpdatePostData(blog.id);
-
-      await postsRepository.update(post.id, updateData);
-
-      const updated = await postsRepository.getById(post.id);
-      expectPostToMatchInput(updated, updateData);
-    });
-
-    it('should update all fields', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
-      const updateData = postsFactory.createUpdatePostData(blog.id, {
-        title: 'New Title',
-        shortDescription: 'New Description',
-        content: 'New Content',
-      });
-
-      await postsRepository.update(post.id, updateData);
-
-      const updated = await postsRepository.getById(post.id);
-      expect(updated.title).toBe('New Title');
-      expect(updated.shortDescription).toBe('New Description');
-      expect(updated.content).toBe('New Content');
-    });
-
-    it('should return 401 without admin credentials', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
-      const updateData = postsFactory.createUpdatePostData(blog.id);
-
-      await postsRepository.update(post.id, updateData, {
-        statusCode: 401,
-        auth: 'none',
-      });
-    });
-  });
-
-  describe('DELETE /posts/:id - Delete Post', () => {
-    it('should soft-delete post with admin auth', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
-
-      await postsRepository.delete(post.id);
-
-      const result = await postsRepository.getAll();
-      expect(result.items).toHaveLength(0);
-    });
-
-    it('should return 401 without admin credentials', async () => {
-      const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
-
-      await postsRepository.delete(post.id, {
-        statusCode: 401,
-        auth: 'none',
-      });
-    });
-  });
-
   describe('PUT /posts/:postId/like-status - Like Operations', () => {
     it('should allow user to like a post', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Create user and login
       const userData = usersFactory.createUserData();
@@ -403,7 +252,7 @@ describe('Posts (e2e)', () => {
 
     it('should allow user to dislike a post', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -429,7 +278,7 @@ describe('Posts (e2e)', () => {
 
     it('should allow user to unlike a post', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -463,7 +312,7 @@ describe('Posts (e2e)', () => {
 
     it('should maintain newestLikes list with max 3 likes', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Create 5 users and have them like the post
       for (let i = 0; i < 5; i++) {
@@ -494,7 +343,7 @@ describe('Posts (e2e)', () => {
 
     it('should allow user to change from like to dislike', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -527,7 +376,7 @@ describe('Posts (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       await postsRepository.updateLikeStatus(
         post.id,
@@ -550,6 +399,7 @@ describe('Posts (e2e)', () => {
       );
 
       const { post } = await createPostWithComments(
+        blogsRepository,
         postsRepository,
         blog.id,
         3,
@@ -565,7 +415,7 @@ describe('Posts (e2e)', () => {
 
     it('should return empty array when post has no comments', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const result = await postsRepository.getComments(post.id);
 
@@ -584,6 +434,7 @@ describe('Posts (e2e)', () => {
       );
 
       const { post } = await createPostWithComments(
+        blogsRepository,
         postsRepository,
         blog.id,
         15,
@@ -604,7 +455,7 @@ describe('Posts (e2e)', () => {
   describe('POST /posts/:postId/comments - Create Comment For Post', () => {
     it('should create comment for post with authenticated user', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -633,7 +484,7 @@ describe('Posts (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const commentData = {
         content: TEST_HELPERS.createString(
@@ -649,7 +500,7 @@ describe('Posts (e2e)', () => {
 
     it('should return 400 with invalid comment data', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);

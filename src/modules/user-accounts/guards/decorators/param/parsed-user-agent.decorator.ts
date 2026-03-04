@@ -23,8 +23,6 @@ export const ParsedUserAgent = createParamDecorator(
     }
 
     // Fallback: return first 50 chars or full string if shorter
-    return userAgent.length > 50
-      ? userAgent.substring(0, 50)
-      : userAgent;
+    return userAgent.length > 50 ? userAgent.substring(0, 50) : userAgent;
   },
 );

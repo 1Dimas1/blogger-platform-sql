@@ -1,6 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
+import { PostsRepository } from '../posts/posts.repository';
 import { blogsFactory } from './blogs.factory';
+import { postsFactory } from '../posts/posts.factory';
 import {
   expectValidBlogShape,
   expectBlogToMatchInput,
@@ -21,6 +23,7 @@ import { TEST_HELPERS } from '../config/test-constants';
 describe('Blogs (e2e)', () => {
   let app: INestApplication;
   let blogsRepository: BlogsRepository;
+  let postsRepository: PostsRepository;
   let httpServer: any;
 
   beforeAll(async () => {
@@ -28,6 +31,7 @@ describe('Blogs (e2e)', () => {
     app = result.app;
     httpServer = result.httpServer;
     blogsRepository = result.blogsRepository;
+    postsRepository = result.postsRepository;
   });
 
   afterAll(async () => {
@@ -275,7 +279,7 @@ describe('Blogs (e2e)', () => {
     });
   });
 
-  describe('POST /blogs - Create Blog', () => {
+  describe('POST /sa/blogs - Create Blog', () => {
     it('should create blog with admin auth', async () => {
       const blogData = blogsFactory.createBlogData();
 
@@ -410,7 +414,7 @@ describe('Blogs (e2e)', () => {
     });
   });
 
-  describe('PUT /blogs/:id - Update Blog', () => {
+  describe('PUT /sa/blogs/:id - Update Blog', () => {
     it('should update blog with admin auth', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
       const updateData = blogsFactory.createUpdateBlogData();
@@ -529,7 +533,7 @@ describe('Blogs (e2e)', () => {
     });
   });
 
-  describe('DELETE /blogs/:id - Delete Blog', () => {
+  describe('DELETE /sa/blogs/:id - Delete Blog', () => {
     it('should soft-delete blog with admin auth', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
 
@@ -639,7 +643,7 @@ describe('Blogs (e2e)', () => {
     });
   });
 
-  describe('POST /blogs/:blogId/posts - Create Post For Blog', () => {
+  describe('POST /sa/blogs/:blogId/posts - Create Post For Blog', () => {
     it('should create post for blog with admin auth', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
       const postData = blogsFactory.createPostData();
@@ -696,6 +700,172 @@ describe('Blogs (e2e)', () => {
       );
 
       expectValidationErrors(response, ['title']);
+    });
+  });
+
+  describe('PUT /sa/blogs/:blogId/posts/:postId - Update Post For Blog', () => {
+    it('should update post with admin auth', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+      const updateData = postsFactory.createUpdatePostData(blog.id);
+
+      await blogsRepository.updatePost(blog.id, post.id, updateData);
+
+      const updated = await postsRepository.getById(post.id);
+      expect(updated.title).toBe(updateData.title);
+      expect(updated.shortDescription).toBe(updateData.shortDescription);
+      expect(updated.content).toBe(updateData.content);
+    });
+
+    it('should return 401 without admin credentials', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+      const updateData = postsFactory.createUpdatePostData(blog.id);
+
+      const response = await blogsRepository.updatePost(
+        blog.id,
+        post.id,
+        updateData,
+        { statusCode: 401, auth: 'none' },
+      );
+
+      expectErrorResponse(response, 401);
+    });
+
+    it('should return 404 when blog not found', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+      const updateData = postsFactory.createUpdatePostData(blog.id);
+      const nonExistentId = TEST_HELPERS.createNonExistentId();
+
+      const response = await blogsRepository.updatePost(
+        nonExistentId,
+        post.id,
+        updateData,
+        { statusCode: 404 },
+      );
+
+      expectErrorResponse(response, 404);
+    });
+
+    it('should return 404 when post not found', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const updateData = postsFactory.createUpdatePostData(blog.id);
+      const nonExistentId = TEST_HELPERS.createNonExistentId();
+
+      const response = await blogsRepository.updatePost(
+        blog.id,
+        nonExistentId,
+        updateData,
+        { statusCode: 404 },
+      );
+
+      expectErrorResponse(response, 404);
+    });
+
+    it('should return 404 when post does not belong to blog', async () => {
+      const blog1 = await blogsFactory.createBlog(blogsRepository);
+      const blog2 = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog1.id,
+        blogsFactory.createPostData(),
+      );
+      const updateData = postsFactory.createUpdatePostData(blog2.id);
+
+      const response = await blogsRepository.updatePost(
+        blog2.id,
+        post.id,
+        updateData,
+        { statusCode: 404 },
+      );
+
+      expectErrorResponse(response, 404);
+    });
+  });
+
+  describe('DELETE /sa/blogs/:blogId/posts/:postId - Delete Post For Blog', () => {
+    it('should soft-delete post with admin auth', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+
+      await blogsRepository.deletePost(blog.id, post.id);
+
+      const result = await postsRepository.getById(post.id, {
+        statusCode: 404,
+      });
+      expectErrorResponse(result, 404);
+    });
+
+    it('should return 401 without admin credentials', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+
+      const response = await blogsRepository.deletePost(blog.id, post.id, {
+        statusCode: 401,
+        auth: 'none',
+      });
+
+      expectErrorResponse(response, 401);
+    });
+
+    it('should return 404 when blog not found', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog.id,
+        blogsFactory.createPostData(),
+      );
+      const nonExistentId = TEST_HELPERS.createNonExistentId();
+
+      const response = await blogsRepository.deletePost(
+        nonExistentId,
+        post.id,
+        { statusCode: 404 },
+      );
+
+      expectErrorResponse(response, 404);
+    });
+
+    it('should return 404 when post not found', async () => {
+      const blog = await blogsFactory.createBlog(blogsRepository);
+      const nonExistentId = TEST_HELPERS.createNonExistentId();
+
+      const response = await blogsRepository.deletePost(
+        blog.id,
+        nonExistentId,
+        { statusCode: 404 },
+      );
+
+      expectErrorResponse(response, 404);
+    });
+
+    it('should return 404 when post does not belong to blog', async () => {
+      const blog1 = await blogsFactory.createBlog(blogsRepository);
+      const blog2 = await blogsFactory.createBlog(blogsRepository);
+      const post = await blogsRepository.createPost(
+        blog1.id,
+        blogsFactory.createPostData(),
+      );
+
+      const response = await blogsRepository.deletePost(blog2.id, post.id, {
+        statusCode: 404,
+      });
+
+      expectErrorResponse(response, 404);
     });
   });
 });

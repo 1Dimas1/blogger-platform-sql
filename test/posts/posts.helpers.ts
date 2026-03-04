@@ -1,4 +1,5 @@
 import { PostsRepository } from './posts.repository';
+import { BlogsRepository } from '../blogs/blogs.repository';
 import { postsFactory } from './posts.factory';
 import { PostViewDto } from '../../src/modules/blogger-platform/posts/api/view-dto/post.view-dto';
 import { CommentViewDto } from '../../src/modules/blogger-platform/comments/api/view-dto/comment.view-dto';
@@ -25,21 +26,23 @@ import { delay } from '../utils/delay';
  * );
  */
 export async function createPostWithComments(
+  blogsRepository: BlogsRepository,
   postsRepository: PostsRepository,
   blogId: string,
   commentCount: number,
   userAccessToken: string,
 ): Promise<{ post: PostViewDto; comments: CommentViewDto[] }> {
   // Create post
-  const post = await postsFactory.createPost(postsRepository, blogId);
+  const post = await postsFactory.createPost(blogsRepository, blogId);
 
   // Create comments for the post
   const comments: CommentViewDto[] = [];
   for (let i = 0; i < commentCount; i++) {
     const commentData: CreateCommentInputDto = {
-      content: TEST_HELPERS.createString(
-        TEST_CONSTANTS.VALIDATION.COMMENT.CONTENT_MIN,
-      ) + ` - Comment ${i + 1}`,
+      content:
+        TEST_HELPERS.createString(
+          TEST_CONSTANTS.VALIDATION.COMMENT.CONTENT_MIN,
+        ) + ` - Comment ${i + 1}`,
     };
 
     const comment = await postsRepository.createComment(post.id, commentData, {
@@ -78,6 +81,7 @@ export async function createPostWithComments(
  * // Creates 3 posts, each with 5 comments
  */
 export async function createMultiplePostsWithComments(
+  blogsRepository: BlogsRepository,
   postsRepository: PostsRepository,
   blogId: string,
   postCount: number,
@@ -91,6 +95,7 @@ export async function createMultiplePostsWithComments(
 
   for (let i = 0; i < postCount; i++) {
     const { post, comments } = await createPostWithComments(
+      blogsRepository,
       postsRepository,
       blogId,
       commentsPerPost,

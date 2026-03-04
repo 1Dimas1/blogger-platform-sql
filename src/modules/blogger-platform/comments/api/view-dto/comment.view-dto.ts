@@ -36,10 +36,7 @@ export class CommentViewDto {
   @ApiProperty({ type: LikesInfoViewDto })
   likesInfo: LikesInfoViewDto;
 
-  static mapToView(
-    row: any,
-    likesInfo: LikesInfoViewDto,
-  ): CommentViewDto {
+  static mapToView(row: any, likesInfo: LikesInfoViewDto): CommentViewDto {
     const dto = new CommentViewDto();
 
     dto.id = row.id;

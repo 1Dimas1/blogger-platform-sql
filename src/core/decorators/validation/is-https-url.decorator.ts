@@ -17,7 +17,7 @@ import {
  * }
  */
 export function IsHttpsUrl(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isHttpsUrl',
       target: object.constructor,

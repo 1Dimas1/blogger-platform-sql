@@ -1,7 +1,7 @@
-import { CreatePostInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/create-post.input-dto';
+import { CreatePostByBlogIdInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/create-post.input-dto';
 import { UpdatePostInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/update-post.input-dto';
 import { PostViewDto } from '../../src/modules/blogger-platform/posts/api/view-dto/post.view-dto';
-import { PostsRepository } from './posts.repository';
+import { BlogsRepository } from '../blogs/blogs.repository';
 import { TEST_CONSTANTS, TEST_HELPERS } from '../config/test-constants';
 import { delay } from '../utils/delay';
 
@@ -30,17 +30,17 @@ export const postsFactory = {
    */
   createPostData(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     const timestamp = Date.now();
     return {
       title:
-        overrides.title ?? `Post ${timestamp.toString().slice(-6)}`.substring(0, 30),
+        overrides.title ??
+        `Post ${timestamp.toString().slice(-6)}`.substring(0, 30),
       shortDescription:
         overrides.shortDescription ??
         `Description ${timestamp}`.substring(0, 100),
       content: overrides.content ?? `Content for post ${timestamp}`,
-      blogId: overrides.blogId ?? blogId,
     };
   },
 
@@ -55,7 +55,7 @@ export const postsFactory = {
    * const invalidData = postsFactory.createInvalidPostData(blogId);
    * await postsRepository.create(invalidData, { statusCode: 400 });
    */
-  createInvalidPostData(blogId: string): CreatePostInputDto {
+  createInvalidPostData(blogId: string): CreatePostByBlogIdInputDto {
     return {
       title: TEST_HELPERS.createString(
         TEST_CONSTANTS.VALIDATION.POST.TITLE_MAX + 1,
@@ -66,7 +66,6 @@ export const postsFactory = {
       content: TEST_HELPERS.createString(
         TEST_CONSTANTS.VALIDATION.POST.CONTENT_MAX + 1,
       ), // Too long
-      blogId,
     };
   },
 
@@ -79,8 +78,8 @@ export const postsFactory = {
    */
   createPostDataWithShortTitle(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       title: TEST_HELPERS.createString(
@@ -98,8 +97,8 @@ export const postsFactory = {
    */
   createPostDataWithLongTitle(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       title: TEST_HELPERS.createString(
@@ -117,8 +116,8 @@ export const postsFactory = {
    */
   createPostDataWithTooLongTitle(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       title: TEST_HELPERS.createString(
@@ -136,8 +135,8 @@ export const postsFactory = {
    */
   createPostDataWithEmptyTitle(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       title: '',
@@ -153,8 +152,8 @@ export const postsFactory = {
    */
   createPostDataWithTooLongShortDescription(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       shortDescription: TEST_HELPERS.createString(
@@ -172,8 +171,8 @@ export const postsFactory = {
    */
   createPostDataWithEmptyShortDescription(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       shortDescription: '',
@@ -189,8 +188,8 @@ export const postsFactory = {
    */
   createPostDataWithTooLongContent(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       content: TEST_HELPERS.createString(
@@ -208,8 +207,8 @@ export const postsFactory = {
    */
   createPostDataWithEmptyContent(
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
-  ): CreatePostInputDto {
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
+  ): CreatePostByBlogIdInputDto {
     return this.createPostData(blogId, {
       ...overrides,
       content: '',
@@ -259,12 +258,12 @@ export const postsFactory = {
    * });
    */
   async createPost(
-    repository: PostsRepository,
+    repository: BlogsRepository,
     blogId: string,
-    overrides: Partial<CreatePostInputDto> = {},
+    overrides: Partial<CreatePostByBlogIdInputDto> = {},
   ): Promise<PostViewDto> {
     const postData = this.createPostData(blogId, overrides);
-    return repository.create(postData);
+    return repository.createPost(blogId, postData);
   },
 
   /**
@@ -282,9 +281,9 @@ export const postsFactory = {
    */
   async createMultiplePosts(
     count: number,
-    repository: PostsRepository,
+    repository: BlogsRepository,
     blogId: string,
-    baseOverrides: Partial<CreatePostInputDto> = {},
+    baseOverrides: Partial<CreatePostByBlogIdInputDto> = {},
   ): Promise<PostViewDto[]> {
     const posts: PostViewDto[] = [];
 

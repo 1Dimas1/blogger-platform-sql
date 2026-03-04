@@ -64,12 +64,7 @@ export class PostsQueryRepository {
     query: GetPostsQueryParams,
     userId?: string | null,
   ): Promise<PaginatedViewDto<PostViewDto[]>> {
-    return this._getPostsPaginated(
-      'p.deleted_at IS NULL',
-      [],
-      query,
-      userId,
-    );
+    return this._getPostsPaginated('p.deleted_at IS NULL', [], query, userId);
   }
 
   async getAllByBlogId(

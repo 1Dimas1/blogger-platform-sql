@@ -17,7 +17,9 @@ export class GetPostsQueryHandler
 {
   constructor(private postsQueryRepository: PostsQueryRepository) {}
 
-  async execute(query: GetPostsQuery): Promise<PaginatedViewDto<PostViewDto[]>> {
+  async execute(
+    query: GetPostsQuery,
+  ): Promise<PaginatedViewDto<PostViewDto[]>> {
     return this.postsQueryRepository.getAll(query.queryParams, query.userId);
   }
 }

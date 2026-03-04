@@ -77,9 +77,7 @@ export class CommentsRepository {
     const auth = options.auth;
 
     let req = request(this.httpServer)
-      .put(
-        `/${Constants.GLOBAL_PREFIX}${Constants.PATH.COMMENTS}/${commentId}`,
-      )
+      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.COMMENTS}/${commentId}`)
       .send(data);
 
     if (auth && typeof auth === 'object') {
@@ -105,10 +103,7 @@ export class CommentsRepository {
    *   auth: { token: ownerToken }
    * });
    */
-  async delete(
-    commentId: string,
-    options: RequestOptions = {},
-  ): Promise<void> {
+  async delete(commentId: string, options: RequestOptions = {}): Promise<void> {
     const expectedStatus = options.statusCode ?? HttpStatus.NO_CONTENT;
     const auth = options.auth;
 

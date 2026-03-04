@@ -60,8 +60,7 @@ export async function createMultipleBlogsWithPosts(
   blogCount: number,
   postsPerBlog: number,
 ): Promise<Array<{ blog: BlogViewDto; posts: PostViewDto[] }>> {
-  const blogsWithPosts: Array<{ blog: BlogViewDto; posts: PostViewDto[] }> =
-    [];
+  const blogsWithPosts: Array<{ blog: BlogViewDto; posts: PostViewDto[] }> = [];
 
   for (let i = 0; i < blogCount; i++) {
     const { blog, posts } = await createBlogWithPosts(

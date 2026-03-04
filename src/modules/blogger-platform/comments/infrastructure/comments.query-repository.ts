@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CommentViewDto, LikesInfoViewDto } from '../api/view-dto/comment.view-dto';
+import {
+  CommentViewDto,
+  LikesInfoViewDto,
+} from '../api/view-dto/comment.view-dto';
 import { GetCommentsQueryParams } from '../api/input-dto/get-comments-query-params.input-dto';
 import { LikeStatus } from '../../likes/domain/like.entity';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
@@ -19,7 +22,10 @@ export class CommentsQueryRepository {
     return sortColumnMap[sortBy] || 'c.created_at';
   }
 
-  private buildLikesSelect(userId: string | null | undefined, paramIndex: number): {
+  private buildLikesSelect(
+    userId: string | null | undefined,
+    paramIndex: number,
+  ): {
     selectClause: string;
     params: any[];
     nextParamIndex: number;

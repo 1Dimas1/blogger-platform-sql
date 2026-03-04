@@ -6,6 +6,7 @@ import { CreateBlogInputDto } from '../../src/modules/blogger-platform/blogs/api
 import { UpdateBlogInputDto } from '../../src/modules/blogger-platform/blogs/api/input-dto/update-blog.input-dto';
 import { PostViewDto } from '../../src/modules/blogger-platform/posts/api/view-dto/post.view-dto';
 import { CreatePostByBlogIdInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/create-post.input-dto';
+import { UpdatePostInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/update-post.input-dto';
 import { TEST_CONSTANTS } from '../config/test-constants';
 import { Constants } from '../../src/core/constants';
 
@@ -86,14 +87,11 @@ export class BlogsRepository {
     const auth = options.auth ?? 'admin';
 
     let req = request(this.httpServer)
-      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.BLOGS}`)
+      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}`)
       .send(data);
 
     if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
     } else if (auth !== 'none' && typeof auth === 'object') {
       req = req.set('Authorization', `Bearer ${auth.token}`);
     }
@@ -121,14 +119,11 @@ export class BlogsRepository {
     const auth = options.auth ?? 'admin';
 
     let req = request(this.httpServer)
-      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.BLOGS}/${id}`)
+      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}/${id}`)
       .send(data);
 
     if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
     } else if (auth !== 'none' && typeof auth === 'object') {
       req = req.set('Authorization', `Bearer ${auth.token}`);
     }
@@ -150,14 +145,11 @@ export class BlogsRepository {
     const auth = options.auth ?? 'admin';
 
     let req = request(this.httpServer).delete(
-      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.BLOGS}/${id}`,
+      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}/${id}`,
     );
 
     if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
     } else if (auth !== 'none' && typeof auth === 'object') {
       req = req.set('Authorization', `Bearer ${auth.token}`);
     }
@@ -219,20 +211,74 @@ export class BlogsRepository {
     const auth = options.auth ?? 'admin';
 
     let req = request(this.httpServer)
-      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.BLOGS}/${blogId}/posts`)
+      .post(
+        `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}/${blogId}/posts`,
+      )
       .send(data);
 
     if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
     } else if (auth !== 'none' && typeof auth === 'object') {
       req = req.set('Authorization', `Bearer ${auth.token}`);
     }
 
     const response = await req.expect(expectedStatus);
 
+    return response.body;
+  }
+
+  /**
+   * Update post for blog (admin only)
+   * PUT /sa/blogs/:blogId/posts/:postId
+   */
+  async updatePost(
+    blogId: string,
+    postId: string,
+    data: UpdatePostInputDto,
+    options: RequestOptions = {},
+  ): Promise<any> {
+    const expectedStatus = options.statusCode ?? HttpStatus.NO_CONTENT;
+    const auth = options.auth ?? 'admin';
+
+    let req = request(this.httpServer)
+      .put(
+        `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}/${blogId}/posts/${postId}`,
+      )
+      .send(data);
+
+    if (auth === 'admin') {
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
+    } else if (auth !== 'none' && typeof auth === 'object') {
+      req = req.set('Authorization', `Bearer ${auth.token}`);
+    }
+
+    const response = await req.expect(expectedStatus);
+    return response.body;
+  }
+
+  /**
+   * Soft delete post for blog (admin only)
+   * DELETE /sa/blogs/:blogId/posts/:postId
+   */
+  async deletePost(
+    blogId: string,
+    postId: string,
+    options: RequestOptions = {},
+  ): Promise<any> {
+    const expectedStatus = options.statusCode ?? HttpStatus.NO_CONTENT;
+    const auth = options.auth ?? 'admin';
+
+    let req = request(this.httpServer).delete(
+      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.SA.BLOGS}/${blogId}/posts/${postId}`,
+    );
+
+    if (auth === 'admin') {
+      req = req.auth(TEST_CONSTANTS.ADMIN.LOGIN, TEST_CONSTANTS.ADMIN.PASSWORD);
+    } else if (auth !== 'none' && typeof auth === 'object') {
+      req = req.set('Authorization', `Bearer ${auth.token}`);
+    }
+
+    const response = await req.expect(expectedStatus);
     return response.body;
   }
 }

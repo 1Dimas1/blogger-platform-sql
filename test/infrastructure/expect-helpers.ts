@@ -52,7 +52,10 @@ export function expectValidationErrors(
   if (response.extensions && Array.isArray(response.extensions)) {
     // Development format: { message, code, extensions: [{ message, field }] }
     errorFields = response.extensions.map((ext: any) => ext.field);
-  } else if (response.errorsMessages && Array.isArray(response.errorsMessages)) {
+  } else if (
+    response.errorsMessages &&
+    Array.isArray(response.errorsMessages)
+  ) {
     // Production format: { errorsMessages: [{ message, field }] }
     errorFields = response.errorsMessages.map((err: any) => err.field);
   } else if (response.message && Array.isArray(response.message)) {
@@ -122,13 +125,22 @@ export function expectErrorResponse(
   if (expectedMessage) {
     if (response.extensions && Array.isArray(response.extensions)) {
       const messages = response.extensions.map((ext: any) => ext.message);
-      expect(messages.some((msg: string) => msg.includes(expectedMessage))).toBe(true);
-    } else if (response.errorsMessages && Array.isArray(response.errorsMessages)) {
+      expect(
+        messages.some((msg: string) => msg.includes(expectedMessage)),
+      ).toBe(true);
+    } else if (
+      response.errorsMessages &&
+      Array.isArray(response.errorsMessages)
+    ) {
       const messages = response.errorsMessages.map((err: any) => err.message);
-      expect(messages.some((msg: string) => msg.includes(expectedMessage))).toBe(true);
+      expect(
+        messages.some((msg: string) => msg.includes(expectedMessage)),
+      ).toBe(true);
     } else if (response.message) {
       if (Array.isArray(response.message)) {
-        expect(response.message.some((msg: any) => msg.includes(expectedMessage))).toBe(true);
+        expect(
+          response.message.some((msg: any) => msg.includes(expectedMessage)),
+        ).toBe(true);
       } else {
         expect(response.message).toContain(expectedMessage);
       }

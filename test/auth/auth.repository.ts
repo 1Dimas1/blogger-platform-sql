@@ -243,10 +243,7 @@ export class AuthRepository {
    * @example
    * await authRepository.logout(loginResponse.cookies);
    */
-  async logout(
-    cookies: string[],
-    options: RequestOptions = {},
-  ): Promise<void> {
+  async logout(cookies: string[], options: RequestOptions = {}): Promise<void> {
     const { statusCode = HttpStatus.NO_CONTENT } = options;
 
     await request(this.httpServer)

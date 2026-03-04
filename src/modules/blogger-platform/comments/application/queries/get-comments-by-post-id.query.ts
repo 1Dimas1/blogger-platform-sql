@@ -14,11 +14,14 @@ export class GetCommentsByPostIdQuery {
 
 @QueryHandler(GetCommentsByPostIdQuery)
 export class GetCommentsByPostIdQueryHandler
-  implements IQueryHandler<GetCommentsByPostIdQuery, PaginatedViewDto<CommentViewDto[]>>
+  implements
+    IQueryHandler<GetCommentsByPostIdQuery, PaginatedViewDto<CommentViewDto[]>>
 {
   constructor(private commentsQueryRepository: CommentsQueryRepository) {}
 
-  async execute(query: GetCommentsByPostIdQuery): Promise<PaginatedViewDto<CommentViewDto[]>> {
+  async execute(
+    query: GetCommentsByPostIdQuery,
+  ): Promise<PaginatedViewDto<CommentViewDto[]>> {
     return this.commentsQueryRepository.getAllByPostId(
       query.postId,
       query.queryParams,

@@ -36,8 +36,7 @@ export const blogsFactory = {
       name:
         overrides.name ??
         `Blog${timestamp.toString().slice(-8)}`.substring(0, 15),
-      description:
-        overrides.description ?? `Description for blog ${timestamp}`,
+      description: overrides.description ?? `Description for blog ${timestamp}`,
       websiteUrl:
         overrides.websiteUrl ??
         TEST_HELPERS.createWebsiteUrl(`blog${timestamp}.com`),
@@ -232,8 +231,7 @@ export const blogsFactory = {
       name:
         overrides.name ??
         `Updated${timestamp.toString().slice(-6)}`.substring(0, 15),
-      description:
-        overrides.description ?? `Updated description ${timestamp}`,
+      description: overrides.description ?? `Updated description ${timestamp}`,
       websiteUrl:
         overrides.websiteUrl ??
         TEST_HELPERS.createWebsiteUrl(`updated${timestamp}.com`),

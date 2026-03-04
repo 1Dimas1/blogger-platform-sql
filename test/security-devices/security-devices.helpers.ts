@@ -43,7 +43,7 @@ export async function createMultipleSessions(
 
     sessions.push({
       login: userData.login,
-      email: userData.email!,
+      email: userData.email,
       password: userData.password,
       accessToken: loginResponse.body.accessToken,
       refreshToken: loginResponse.refreshToken,

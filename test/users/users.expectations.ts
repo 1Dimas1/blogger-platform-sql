@@ -82,10 +82,7 @@ export function expectUserToMatchInput(
  * const user2 = await usersRepository.getById(userId);
  * expectUsersToMatch(user1, user2);
  */
-export function expectUsersToMatch(
-  actual: UserViewDto,
-  expected: UserViewDto,
-) {
+export function expectUsersToMatch(actual: UserViewDto, expected: UserViewDto) {
   expect(actual.id).toBe(expected.id);
   expect(actual.login).toBe(expected.login);
   expect(actual.email).toBe(expected.email);
@@ -130,10 +127,7 @@ export function expectUserEmail(user: UserViewDto, expectedEmail: string) {
  * const users = await usersRepository.getAll();
  * expectUsersToIncludeLogin(users.items, 'testuser');
  */
-export function expectUsersToIncludeLogin(
-  users: UserViewDto[],
-  login: string,
-) {
+export function expectUsersToIncludeLogin(users: UserViewDto[], login: string) {
   const found = users.find((u) => u.login === login);
   expect(found).toBeDefined();
   expect(found?.login).toBe(login);

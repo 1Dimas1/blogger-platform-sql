@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BlogsController } from './blogs/api/blogs.controller';
+import { SaBlogsController } from './blogs/api/sa-blogs.controller';
 import { PostsController } from './posts/api/posts.controller';
 import { BlogsRepository } from './blogs/infrastructure/blogs.repository';
 import { BlogsQueryRepository } from './blogs/infrastructure/blogs.query-repository';
@@ -18,6 +19,8 @@ import { CreatePostUseCase } from './posts/application/usecases/create-post.usec
 import { CreatePostByBlogIdUseCase } from './posts/application/usecases/create-post-by-blog-id.usecase';
 import { UpdatePostUseCase } from './posts/application/usecases/update-post.usecase';
 import { DeletePostUseCase } from './posts/application/usecases/delete-post.usecase';
+import { UpdatePostByBlogIdUseCase } from './posts/application/usecases/update-post-by-blog-id.usecase';
+import { DeletePostByBlogIdUseCase } from './posts/application/usecases/delete-post-by-blog-id.usecase';
 import { UpdatePostLikesInfoUseCase } from './posts/application/usecases/update-post-likes-info.usecase';
 import { GetPostByIdQueryHandler } from './posts/application/queries/get-post-by-id.query';
 import { GetPostsByBlogIdQueryHandler } from './posts/application/queries/get-posts-by-blog-id.query';
@@ -43,6 +46,8 @@ const commandHandlers = [
   CreatePostByBlogIdUseCase,
   UpdatePostUseCase,
   DeletePostUseCase,
+  UpdatePostByBlogIdUseCase,
+  DeletePostByBlogIdUseCase,
   UpdatePostLikesInfoUseCase,
   CreateCommentUseCase,
   UpdateCommentUseCase,
@@ -63,7 +68,12 @@ const queryHandlers = [
 
 @Module({
   imports: [UserAccountsModule],
-  controllers: [BlogsController, PostsController, CommentsController],
+  controllers: [
+    BlogsController,
+    SaBlogsController,
+    PostsController,
+    CommentsController,
+  ],
   providers: [
     ...commandHandlers,
     ...queryHandlers,

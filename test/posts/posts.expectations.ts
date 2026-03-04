@@ -27,9 +27,7 @@ export function expectValidPostShape(post: PostViewDto) {
   expect(post.extendedLikesInfo).toBeDefined();
   expect(typeof post.extendedLikesInfo.likesCount).toBe('number');
   expect(typeof post.extendedLikesInfo.dislikesCount).toBe('number');
-  expect(Object.values(LikeStatus)).toContain(
-    post.extendedLikesInfo.myStatus,
-  );
+  expect(Object.values(LikeStatus)).toContain(post.extendedLikesInfo.myStatus);
   expect(Array.isArray(post.extendedLikesInfo.newestLikes)).toBe(true);
 
   // Validate newestLikes structure
@@ -81,10 +79,7 @@ export function expectPostToMatchInput(
  * const post2 = await postsRepository.getById(id);
  * expectPostsToMatch(post1, post2);
  */
-export function expectPostsToMatch(
-  actual: PostViewDto,
-  expected: PostViewDto,
-) {
+export function expectPostsToMatch(actual: PostViewDto, expected: PostViewDto) {
   expect(actual.id).toBe(expected.id);
   expect(actual.title).toBe(expected.title);
   expect(actual.shortDescription).toBe(expected.shortDescription);
@@ -138,10 +133,7 @@ export function expectLikesCounts(
  * @example
  * expectMyStatus(post, LikeStatus.Like);
  */
-export function expectMyStatus(
-  post: PostViewDto,
-  expectedStatus: LikeStatus,
-) {
+export function expectMyStatus(post: PostViewDto, expectedStatus: LikeStatus) {
   expect(post.extendedLikesInfo.myStatus).toBe(expectedStatus);
 }
 

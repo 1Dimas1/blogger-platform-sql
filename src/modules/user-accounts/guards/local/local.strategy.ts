@@ -19,7 +19,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         code: DomainExceptionCode.BadRequest,
         message: 'loginOrEmail should not be empty',
         extensions: [
-          { message: 'loginOrEmail should not be empty', field: 'loginOrEmail' },
+          {
+            message: 'loginOrEmail should not be empty',
+            field: 'loginOrEmail',
+          },
         ],
       });
     }

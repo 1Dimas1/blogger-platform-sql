@@ -60,7 +60,8 @@ export class UsersQueryRepository {
 
     const whereClause = conditions.join(' AND ');
     const sortColumn = sortByColumnMap[query.sortBy] || 'created_at';
-    const sortDirection = query.sortDirection.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+    const sortDirection =
+      query.sortDirection.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
     const countResult = await this.dbService.query(
       `SELECT COUNT(*) FROM users WHERE ${whereClause}`,

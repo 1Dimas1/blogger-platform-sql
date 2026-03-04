@@ -67,10 +67,7 @@ export function expectBlogToMatchInput(
  * const blog2 = await blogsRepository.getById(id);
  * expectBlogsToMatch(blog1, blog2);
  */
-export function expectBlogsToMatch(
-  actual: BlogViewDto,
-  expected: BlogViewDto,
-) {
+export function expectBlogsToMatch(actual: BlogViewDto, expected: BlogViewDto) {
   expect(actual.id).toBe(expected.id);
   expect(actual.name).toBe(expected.name);
   expect(actual.description).toBe(expected.description);

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,19 +14,13 @@ import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBasicAuth,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { PostViewDto } from './view-dto/post.view-dto';
 import { GetPostsQueryParams } from './input-dto/get-posts-query-params.input-dto';
 import { Constants } from '../../../../core/constants';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import { CreatePostInputDto } from './input-dto/create-post.input-dto';
-import { UpdatePostInputDto } from './input-dto/update-post.input-dto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { CreatePostCommand } from '../application/usecases/create-post.usecase';
-import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
-import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
 import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query';
 import { GetPostsQuery } from '../application/queries/get-posts.query';
 import { LikeInputDto } from '../../likes/api/input-dto/like.input-dto';
@@ -38,7 +31,6 @@ import { GetCommentsByPostIdQuery } from '../../comments/application/queries/get
 import { GetCommentsQueryParams } from '../../comments/api/input-dto/get-comments-query-params.input-dto';
 import { CommentViewDto } from '../../comments/api/view-dto/comment.view-dto';
 import { CreateCommentInputDto } from '../../comments/api/input-dto/create-comment.input-dto';
-import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.guard';
 import { JwtAuthGuard } from '../../../user-accounts/guards/bearer/jwt-auth.guard';
 import { ExtractUserFromRequest } from '../../../user-accounts/guards/decorators/param/extract-user-from-request.decorator';
 import { UserContextDto } from '../../../user-accounts/guards/dto/user-context.dto';
@@ -156,60 +148,5 @@ export class PostsController {
     return this.commandBus.execute(
       new UpdatePostLikeStatusCommand(postId, body, user.id),
     );
-  }
-
-  @Post()
-  @UseGuards(BasicAuthGuard, JwtOptionalAuthGuard)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Create new post' })
-  @ApiResponse({ status: 201, description: 'Returns the newly created post' })
-  @ApiResponse({
-    status: 400,
-    description: 'If the inputModel has incorrect values',
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async createPost(
-    @Body() body: CreatePostInputDto,
-    @ExtractUserIfExistsFromRequest() user: UserContextDto,
-  ): Promise<PostViewDto> {
-    const postId: string = await this.commandBus.execute<
-      CreatePostCommand,
-      string
-    >(new CreatePostCommand(body));
-
-    return this.queryBus.execute<GetPostByIdQuery, PostViewDto>(
-      new GetPostByIdQuery(postId, user?.id ?? null),
-    );
-  }
-
-  @Put(':id')
-  @UseGuards(BasicAuthGuard)
-  @ApiBasicAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Update existing post by id with InputModel' })
-  @ApiResponse({ status: 204, description: 'No Content' })
-  @ApiResponse({
-    status: 400,
-    description: 'If the inputModel has incorrect values',
-  })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Not Found' })
-  async updatePost(
-    @Param('id') id: string,
-    @Body() body: UpdatePostInputDto,
-  ): Promise<void> {
-    return this.commandBus.execute(new UpdatePostCommand(id, body));
-  }
-
-  @Delete(':id')
-  @UseGuards(BasicAuthGuard)
-  @ApiBasicAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete post specified by id' })
-  @ApiResponse({ status: 204, description: 'No Content' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Not Found' })
-  async deletePost(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute(new DeletePostCommand(id));
   }
 }

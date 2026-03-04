@@ -211,9 +211,7 @@ export const usersFactory = {
         ...baseOverrides,
         // Use createUniqueLogin() which stays within 10 char limit (u + 8 digits = 9 chars)
         // Don't pass custom prefix to avoid exceeding limit
-        login: baseOverrides.login
-          ? `${baseOverrides.login}${i}`
-          : undefined, // Will use default from createUserData which calls createUniqueLogin()
+        login: baseOverrides.login ? `${baseOverrides.login}${i}` : undefined, // Will use default from createUserData which calls createUniqueLogin()
         email: baseOverrides.email
           ? `${baseOverrides.email.replace('@', `${i}@`)}`
           : undefined, // Will use default from createUserData which calls createUniqueEmail()

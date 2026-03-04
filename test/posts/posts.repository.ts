@@ -2,12 +2,9 @@ import { HttpStatus } from '@nestjs/common';
 import request from 'supertest';
 import { PostViewDto } from '../../src/modules/blogger-platform/posts/api/view-dto/post.view-dto';
 import { PaginatedViewDto } from '../../src/core/dto/base.paginated.view-dto';
-import { CreatePostInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/create-post.input-dto';
-import { UpdatePostInputDto } from '../../src/modules/blogger-platform/posts/api/input-dto/update-post.input-dto';
 import { CommentViewDto } from '../../src/modules/blogger-platform/comments/api/view-dto/comment.view-dto';
 import { CreateCommentInputDto } from '../../src/modules/blogger-platform/comments/api/input-dto/create-comment.input-dto';
 import { LikeInputDto } from '../../src/modules/blogger-platform/likes/api/input-dto/like.input-dto';
-import { TEST_CONSTANTS } from '../config/test-constants';
 import { Constants } from '../../src/core/constants';
 
 interface RequestOptions {
@@ -81,98 +78,6 @@ export class PostsRepository {
     const response = await req.expect(expectedStatus);
 
     return response.body;
-  }
-
-  /**
-   * Create new post (admin only)
-   * POST /posts
-   *
-   * @param data - Post creation data (includes blogId)
-   * @param options - Request options (expected status code, auth)
-   * @returns Created post view DTO
-   */
-  async create(
-    data: CreatePostInputDto,
-    options: RequestOptions = {},
-  ): Promise<PostViewDto> {
-    const expectedStatus = options.statusCode ?? HttpStatus.CREATED;
-    const auth = options.auth ?? 'admin';
-
-    let req = request(this.httpServer)
-      .post(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.POSTS}`)
-      .send(data);
-
-    if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
-    } else if (auth !== 'none' && typeof auth === 'object') {
-      req = req.set('Authorization', `Bearer ${auth.token}`);
-    }
-
-    const response = await req.expect(expectedStatus);
-
-    return response.body;
-  }
-
-  /**
-   * Update post (admin only)
-   * PUT /posts/:id
-   *
-   * @param id - Post ID
-   * @param data - Post update data
-   * @param options - Request options (expected status code, auth)
-   */
-  async update(
-    id: string,
-    data: UpdatePostInputDto,
-    options: RequestOptions = {},
-  ): Promise<void> {
-    const expectedStatus = options.statusCode ?? HttpStatus.NO_CONTENT;
-    const auth = options.auth ?? 'admin';
-
-    let req = request(this.httpServer)
-      .put(`/${Constants.GLOBAL_PREFIX}${Constants.PATH.POSTS}/${id}`)
-      .send(data);
-
-    if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
-    } else if (auth !== 'none' && typeof auth === 'object') {
-      req = req.set('Authorization', `Bearer ${auth.token}`);
-    }
-
-    await req.expect(expectedStatus);
-  }
-
-  /**
-   * Soft delete post (admin only)
-   * DELETE /posts/:id
-   *
-   * @param id - Post ID
-   * @param options - Request options (expected status code, auth)
-   */
-  async delete(id: string, options: RequestOptions = {}): Promise<void> {
-    const expectedStatus = options.statusCode ?? HttpStatus.NO_CONTENT;
-    const auth = options.auth ?? 'admin';
-
-    let req = request(this.httpServer).delete(
-      `/${Constants.GLOBAL_PREFIX}${Constants.PATH.POSTS}/${id}`,
-    );
-
-    if (auth === 'admin') {
-      req = req.auth(
-        TEST_CONSTANTS.ADMIN.LOGIN,
-        TEST_CONSTANTS.ADMIN.PASSWORD,
-      );
-    } else if (auth !== 'none' && typeof auth === 'object') {
-      req = req.set('Authorization', `Bearer ${auth.token}`);
-    }
-
-    await req.expect(expectedStatus);
   }
 
   /**

@@ -57,7 +57,7 @@ describe('Comments (e2e)', () => {
     it('should return comment by ID without authentication', async () => {
       // Create blog, post, user, and comment
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -82,7 +82,7 @@ describe('Comments (e2e)', () => {
 
     it('should return comment with correct myStatus for authenticated user', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -116,7 +116,7 @@ describe('Comments (e2e)', () => {
 
     it('should return comment with correct structure (commentatorInfo, likesInfo)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -145,7 +145,7 @@ describe('Comments (e2e)', () => {
 
     it('should return different myStatus for different users', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // User1 creates comment and likes it
       const user1Data = usersFactory.createUserData();
@@ -206,7 +206,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 for deleted comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -231,7 +231,7 @@ describe('Comments (e2e)', () => {
 
     it('should show updated likes counts after likes', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -300,7 +300,7 @@ describe('Comments (e2e)', () => {
   describe('PUT /comments/:commentId - Update Comment', () => {
     it('should update comment with valid data when owner', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -330,7 +330,7 @@ describe('Comments (e2e)', () => {
 
     it('should update to minimum valid content (20 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -364,7 +364,7 @@ describe('Comments (e2e)', () => {
 
     it('should update to maximum valid content (300 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -398,7 +398,7 @@ describe('Comments (e2e)', () => {
 
     it('should trim whitespace from updated content', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -432,7 +432,7 @@ describe('Comments (e2e)', () => {
 
     it('should preserve commentatorInfo after update', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -461,7 +461,7 @@ describe('Comments (e2e)', () => {
 
     it('should preserve likesInfo after update', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -502,7 +502,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is too short (<20 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -528,7 +528,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is too long (>300 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -554,7 +554,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is empty', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -580,7 +580,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -606,7 +606,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 403 when user is not owner', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // User1 creates comment
       const user1Data = usersFactory.createUserData();
@@ -660,7 +660,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 for deleted comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -691,7 +691,7 @@ describe('Comments (e2e)', () => {
   describe('DELETE /comments/:commentId - Delete Comment', () => {
     it('should delete comment when owner', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -715,7 +715,7 @@ describe('Comments (e2e)', () => {
 
     it('should not return deleted comment in GET /posts/:postId/comments', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -757,7 +757,7 @@ describe('Comments (e2e)', () => {
 
     it('should not return deleted comment in GET /comments/:id (404)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -780,7 +780,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow deleting comment with likes', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -811,7 +811,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -835,7 +835,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 403 when user is not owner', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // User1 creates comment
       const user1Data = usersFactory.createUserData();
@@ -886,7 +886,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 for already deleted comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -916,7 +916,7 @@ describe('Comments (e2e)', () => {
   describe('PUT /comments/:commentId/like-status - Like Operations', () => {
     it('should allow user to like a comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -948,7 +948,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow user to dislike a comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -980,7 +980,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow user to unlike a comment (set to None)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1020,7 +1020,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow user to change from like to dislike', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1060,7 +1060,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow user to change from dislike to like', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1100,7 +1100,7 @@ describe('Comments (e2e)', () => {
 
     it('should track likes from multiple users independently', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const ownerData = usersFactory.createUserData();
       await authRepository.register(ownerData);
@@ -1162,7 +1162,7 @@ describe('Comments (e2e)', () => {
 
     it('should show correct myStatus for different users', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Create comment owner
       const ownerData = usersFactory.createUserData();
@@ -1228,7 +1228,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow comment owner to like their own comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1261,7 +1261,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1304,7 +1304,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 for deleted comment', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1333,7 +1333,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 with invalid like status', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1362,7 +1362,7 @@ describe('Comments (e2e)', () => {
   describe('POST /posts/:postId/comments - Create Comment', () => {
     it('should create comment for post with authenticated user', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1388,7 +1388,7 @@ describe('Comments (e2e)', () => {
 
     it('should create comment with minimum valid content (20 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1415,7 +1415,7 @@ describe('Comments (e2e)', () => {
 
     it('should create comment with maximum valid content (300 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1442,7 +1442,7 @@ describe('Comments (e2e)', () => {
 
     it('should trim whitespace from content', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1473,7 +1473,7 @@ describe('Comments (e2e)', () => {
 
     it('should create comment with initial likes info (0/0/None)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1497,7 +1497,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow multiple comments from same user on same post', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1538,7 +1538,7 @@ describe('Comments (e2e)', () => {
 
     it('should allow comments from different users on same post', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // User1
       const user1Data = usersFactory.createUserData();
@@ -1582,7 +1582,7 @@ describe('Comments (e2e)', () => {
 
     it('should cache userLogin in commentatorInfo', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1609,7 +1609,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is too short (<20 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1630,7 +1630,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is too long (>300 chars)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1650,7 +1650,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 400 when content is empty', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1670,7 +1670,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 401 without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const commentData = commentsFactory.createCommentData();
 
@@ -1700,10 +1700,10 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 when post is deleted', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       // Delete the post
-      await postsRepository.delete(post.id);
+      await blogsRepository.deletePost(blog.id, post.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1725,7 +1725,7 @@ describe('Comments (e2e)', () => {
   describe('GET /posts/:postId/comments - Get Comments For Post', () => {
     it('should return all comments for post without authentication', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1755,7 +1755,7 @@ describe('Comments (e2e)', () => {
 
     it('should return empty array when post has no comments', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const result = await postsRepository.getComments(post.id);
 
@@ -1766,7 +1766,7 @@ describe('Comments (e2e)', () => {
 
     it('should return comments with correct myStatus for authenticated user', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1805,7 +1805,7 @@ describe('Comments (e2e)', () => {
 
     it('should support pagination with custom page size', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1835,7 +1835,7 @@ describe('Comments (e2e)', () => {
 
     it('should support pagination with default values', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1862,7 +1862,7 @@ describe('Comments (e2e)', () => {
 
     it('should sort by createdAt descending (default)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1888,7 +1888,7 @@ describe('Comments (e2e)', () => {
 
     it('should sort by createdAt ascending', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1916,7 +1916,7 @@ describe('Comments (e2e)', () => {
 
     it('should return correct totalCount and pagesCount', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1945,9 +1945,9 @@ describe('Comments (e2e)', () => {
 
     it('should not return comments from other posts', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post1 = await postsFactory.createPost(postsRepository, blog.id);
+      const post1 = await postsFactory.createPost(blogsRepository, blog.id);
       await delay(TEST_CONSTANTS.DELAYS.BETWEEN_CREATIONS);
-      const post2 = await postsFactory.createPost(postsRepository, blog.id);
+      const post2 = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -1986,7 +1986,7 @@ describe('Comments (e2e)', () => {
 
     it('should not return deleted comments', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -2032,7 +2032,7 @@ describe('Comments (e2e)', () => {
 
     it('should return 404 when post is deleted', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -2045,7 +2045,7 @@ describe('Comments (e2e)', () => {
       await commentsFactory.createComment(postsRepository, post.id, token);
 
       // Delete the post
-      await postsRepository.delete(post.id);
+      await blogsRepository.deletePost(blog.id, post.id);
 
       // Try to get comments for deleted post
       await postsRepository.getComments(post.id, {}, { statusCode: 404 });
@@ -2053,7 +2053,7 @@ describe('Comments (e2e)', () => {
 
     it('should handle pagination edge cases (last page)', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);
@@ -2085,7 +2085,7 @@ describe('Comments (e2e)', () => {
 
     it('should return valid paginated structure', async () => {
       const blog = await blogsFactory.createBlog(blogsRepository);
-      const post = await postsFactory.createPost(postsRepository, blog.id);
+      const post = await postsFactory.createPost(blogsRepository, blog.id);
 
       const userData = usersFactory.createUserData();
       await authRepository.register(userData);

@@ -6,8 +6,13 @@ export class EmailServiceMock extends EmailService {
     return true;
   }
 
-  async sendPasswordRecoveryEmail(email: string, code: string): Promise<boolean> {
-    console.log('Call mock method sendPasswordRecoveryEmail / EmailServiceMock');
+  async sendPasswordRecoveryEmail(
+    email: string,
+    code: string,
+  ): Promise<boolean> {
+    console.log(
+      'Call mock method sendPasswordRecoveryEmail / EmailServiceMock',
+    );
     return true;
   }
 }

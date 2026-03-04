@@ -16,7 +16,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
         code: DomainExceptionCode.BadRequest,
         message: 'Missing credentials',
         extensions: [
-          { message: 'loginOrEmail or password should not be empty', field: 'loginOrEmail' },
+          {
+            message: 'loginOrEmail or password should not be empty',
+            field: 'loginOrEmail',
+          },
         ],
       });
     }
