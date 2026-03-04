@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UpdatePostDto } from '../../dto/update-post.dto';
-import { IsString } from 'class-validator';
 import { IsStringWithTrim } from '../../../../../core/decorators/validation/is-string-with-trim';
 
 export class UpdatePostInputDto implements UpdatePostDto {
@@ -18,8 +17,4 @@ export class UpdatePostInputDto implements UpdatePostDto {
   // TODO create content constraints
   @IsStringWithTrim(1, 1000)
   content: string;
-
-  @ApiProperty()
-  @IsString()
-  blogId: string;
 }
